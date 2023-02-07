@@ -37,7 +37,6 @@ export default function IndexPage() {
     return () => { mounted = false; };
   }, [router]);
 
-  console.log(products);
   return (<>
     <AppNavbar />
     <Container className='mt-5'>
