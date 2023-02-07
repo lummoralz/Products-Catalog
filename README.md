@@ -16,7 +16,7 @@ Backend
 * Serilog Console Sink: 4.1.0
 * Serilog File Sink: 5.0.0
 
-Frontend (/Products-Catalog/client folder)
+Frontend (/Products Catalog/client folder)
 * NextJs: 13.1.6
 * Axios: 1.3.2
 * Bootstrap React: 5.2.3
