@@ -12,17 +12,20 @@ public class ProductsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor)
+    public ProductsController(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor, ILogger<ProductsController> logger)
     {
         _db = db;
         _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
 
     [HttpGet]
     public async Task<IEnumerable<Product>> GetProducts()
     {
         var products = await _db.Products.ToListAsync();
+        _logger.LogInformation("There are {ProductCount} products", products.Count);
         return products;
     }
 
@@ -30,7 +33,10 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> CreateProduct(ProductRequest input)
     {
         if (!ModelState.IsValid)
+        {
+            _logger.LogDebug("Invalid product {Product}", input);
             return BadRequest(ModelState);
+        }
 
         var userId = _httpContextAccessor.HttpContext!.User.FindAll(ClaimTypes.NameIdentifier).Last();
         var product = new Product
@@ -43,6 +49,7 @@ public class ProductsController : ControllerBase
         };
         await _db.Products.AddAsync(product);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("New product {ProductName} created!", input.Name);
         return Ok();
     }
 }

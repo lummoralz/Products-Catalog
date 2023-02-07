@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Products_Catalog.Models;
 using Products_Catalog.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,17 @@ builder.Services
     .AddScoped<ITokenService, JwtService>()
     .AddHttpContextAccessor()
     .AddControllersWithViews();
+
+builder.Services.AddLogging(builder =>
+{
+    var logger = new LoggerConfiguration()
+        .Enrich.FromLogContext()
+        .MinimumLevel.Debug()
+        .WriteTo.Console()
+        .WriteTo.File("logs\\development.log", rollingInterval: RollingInterval.Day)
+        .CreateLogger();
+    builder.AddSerilog(logger);
+});
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
