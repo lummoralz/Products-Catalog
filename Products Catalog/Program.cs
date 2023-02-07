@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Products_Catalog.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,9 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
 
 // Add services to the container.
-builder.Services.AddScoped<ITokenService, JwtService>();
-builder.Services.AddControllersWithViews();
-
+builder.Services
+    .AddScoped<ITokenService, JwtService>()
+    .AddHttpContextAccessor()
+    .AddControllersWithViews();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -32,20 +32,11 @@ builder.Services
             ValidIssuer = settings.Issuer,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key!))
         };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                context.Token = context.Request.Cookies["token"];
-                return Task.CompletedTask;
-            }
-        };
     });
 
 builder.Services
     .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MasterConnStr")))
-    .AddIdentityCore<IdentityUser>(options =>
+    .AddIdentityCore<User>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
@@ -66,15 +57,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
-app.UseCors(builder => builder
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .SetIsOriginAllowed((host) => true)
-    .AllowCredentials());
 
+app.UseRouting();
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");

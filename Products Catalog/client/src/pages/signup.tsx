@@ -4,9 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Alert from 'react-bootstrap/Alert';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import api from '../services/api';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function SignUpPage() {
     setConfirmPassError('');
 
     try {
-      await axios.post('https://localhost:7208/api/Users/signup', { Email: email, Password: password, ConfirmPassword: confirmPass });
+      await api.post('/api/Users/signup', { Email: email, Password: password, ConfirmPassword: confirmPass });
       router.push('/signin');
     } catch (ex: any) {
       const { errors, error } = ex.response.data;
@@ -46,7 +46,7 @@ export default function SignUpPage() {
 
   return (<Container className='d-flex align-items-center justify-content-center h-100'>
     <Card className="w-50">
-      <Card.Header><h3>Sign Up</h3></Card.Header>
+      <Card.Header><h3 className='mb-0'>Sign Up</h3></Card.Header>
       <Card.Body>
         {!!error && (<Alert variant='danger'>{error}</Alert>)}
 

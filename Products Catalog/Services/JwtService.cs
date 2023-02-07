@@ -17,7 +17,7 @@ public class JwtService : ITokenService
         _settings = settings.Value;
     }
 
-    public SignInResponse CreateToken(IdentityUser user)
+    public SignInResponse CreateToken(User user)
     {
         var expiration = DateTime.UtcNow.AddHours(_settings.ExpirationHours);
         var token = CreateJwtToken(CreateClaims(user), CreateSigningCredentials(), expiration);
@@ -29,7 +29,7 @@ public class JwtService : ITokenService
         };
     }
 
-    private Claim[] CreateClaims(IdentityUser user) =>
+    private Claim[] CreateClaims(User user) =>
         new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, _settings.Subject!),

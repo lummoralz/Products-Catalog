@@ -5,5 +5,5 @@ namespace Products_Catalog.Services;
 
 public interface ITokenService
 {
-    SignInResponse CreateToken(IdentityUser user);
+    SignInResponse CreateToken(User user);
 }

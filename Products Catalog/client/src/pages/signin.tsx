@@ -4,9 +4,9 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Alert from 'react-bootstrap/Alert';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import api from '../services/api';
 
 export default function Home() {
   const router = useRouter();
@@ -24,10 +24,13 @@ export default function Home() {
     setPassError('');
 
     try {
-      const result = await axios.post('https://localhost:7208/api/Users/signin', { Email: email, Password: password });
-      const expires = new Date(result.data.expiration).toUTCString();
-      document.cookie = `token=${result.data.token}; expires=${expires}; secure; SameSite=none; HttpOnly;`;
-      router.push('/catalog');
+      const result = await api.post('/api/Users/signin', { Email: email, Password: password });
+
+      //I know I should not store JWT tokens in the localStorage, but for simplicity sake I will do it anyways!
+      const { token, expiration } = result.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("expiration", expiration);
+      router.push('/');
     } catch (ex: any) {
       const { errors, error } = ex.response.data;
       if (!!errors) {
@@ -44,7 +47,7 @@ export default function Home() {
 
   return (<Container className='d-flex align-items-center justify-content-center h-100'>
     <Card className="w-50">
-      <Card.Header><h3>Sign In</h3></Card.Header>
+      <Card.Header><h3 className='mb-0'>Sign In</h3></Card.Header>
       <Card.Body>
         {!!error && (<Alert variant='danger'>{error}</Alert>)}
 

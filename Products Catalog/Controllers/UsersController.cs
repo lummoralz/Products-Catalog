@@ -5,17 +5,16 @@ using Products_Catalog.Services;
 
 namespace Products_Catalog.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+[ApiController, Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private const string SIGNIN_ERROR_MESSAGE = "Invalid credentials!";
     public const string SIGNUP_ERROR_MESSAGE = "Not valid user data!";
 
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
 
-    public UsersController(UserManager<IdentityUser> userManager, ITokenService tokenService)
+    public UsersController(UserManager<User> userManager, ITokenService tokenService)
     {
         _userManager = userManager;
         _tokenService = tokenService;
@@ -45,7 +44,7 @@ public class UsersController : ControllerBase
         if (!ModelState.IsValid)
             return Error(SIGNUP_ERROR_MESSAGE);
 
-        var newUser = new IdentityUser { Email = signUp.Email, UserName = signUp.Email };
+        var newUser = new User { Email = signUp.Email, UserName = signUp.Email };
         var result = await _userManager.CreateAsync(newUser, signUp.Password!);
         if (!result.Succeeded)
             return BadRequest(result.Errors);
