@@ -2,7 +2,7 @@
 
 Project created by Luis Miguel Morales Alvarez for Fullstack Developer QualIT -Technical Assessment.
 
-Before running the server make sure you have SQL Server running on your local machine, the version used is listed below.
+Before running the server make sure you have SQL Server running on your local machine, the migrations will run when the server starts, the version used is listed below.
 
 Stack used:
 
